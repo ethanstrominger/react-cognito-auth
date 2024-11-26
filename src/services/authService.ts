@@ -5,16 +5,19 @@ import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 
 // src/services/authService.ts
-const COGNITO_AWS_REGION = "us-east-2";
+const COGNITO_AWS_REGION = process.env.REACT_APP_COGNITO_AWS_REGION || '';
+const COGNITO_CLIENT_ID = process.env.REACT_APP_COGNITO_CLIENT_ID || '';
+const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI || '';
+
+// Dynamically compute the Cognito domain
 const COGNITO_DOMAIN = `peopledepot.auth.${COGNITO_AWS_REGION}.amazoncognito.com`;
 
-// const COGNITO_USER_POOL_NAME="peopledepot"
-// const COGNITO_USER_POOL="us-east-2_i2EKGBFG1"
-const COGNITO_CLIENT_ID = "35ehknpgi8ul8nfn2undd6ufro";
-const REDIRECT_URI = "http://localhost:3000/callback/";
+// Compute dependent URLs
 const TOKEN_ENDPOINT = `https://${COGNITO_DOMAIN}/oauth2/token`;
 const LOGIN_URL = `https://${COGNITO_DOMAIN}/login?response_type=code&client_id=${COGNITO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=openid`;
 
+console.log('TOKEN_ENDPOINT:', TOKEN_ENDPOINT);
+console.log('LOGIN_URL:', LOGIN_URL);
 export const redirectToLogin = () => {
   window.location.href = LOGIN_URL;
 };
@@ -27,35 +30,38 @@ export function isTokenExpired(token: string) {
 }
 
 
-const refreshTokenFunc = async (refreshToken: string) => {
+const refreshTokenFunc = async () => {
   // todo: fix
-  return refreshToken;
-  // try {
-  //   const response = await fetch("https://peopledepot-cognito-domain/oauth2/token", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/x-www-form-urlencoded",
-  //     },
-  //     body: new URLSearchParams({
-  //       grant_type: "refresh_token",
-  //       client_id: "35ehknpgi8ul8nfn2undd6ufro",
-  //       refresh_token: refreshToken,
-  //     }).toString(),
-  //   });
+  const refreshToken = localStorage.getItem("refresh_token") || '';
+  try {
+    console.log("token_endpoint", TOKEN_ENDPOINT, refreshToken)
+    const response = await fetch(TOKEN_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        client_id: "35ehknpgi8ul8nfn2undd6ufro",
+        refresh_token: refreshToken,
+      }).toString(),
+    });
 
-  //   if (!response.ok) {
-  //     throw new Error("Failed to refresh token");
-  //   }
+    if (!response.ok) {
+      throw new Error("Failed to refresh token");
+    }
 
-  //   const data = await response.json();
-  //   return data.access_token; // Return the new access token
-  // } catch (error) {
-  //       if (error instanceof Error) {
-  //         console.error("Error refreshing token:", error.message);
-  //       } else {
-  //         console.error("Unknown error refreshing token:", error);
-  //   }
-  // }
+    const data = await response.json();
+    localStorage.setItem("access_token", data.access_token);
+    localStorage.setItem("refresh_token", data.refresh_token)
+    return data.access_token; // Return the new access token
+  } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error refreshing token:", error.message);
+        } else {
+          console.error("Unknown error refreshing token:", error);
+    }
+  }
 }
 
 export const makeGetRequest = async (url: string) => {
@@ -63,7 +69,7 @@ export const makeGetRequest = async (url: string) => {
 
   if (isTokenExpired(token)) {
     // Token is expired, try to refresh
-    token = await refreshTokenFunc(token);
+    token = await refreshTokenFunc();
   }
   try {
     const response = await axios.get(url, {
@@ -89,13 +95,16 @@ export const exchangeCodeForToken = async (code: string): Promise<void> => {
   });
 
   try {
+    console.log("Endpoiont", TOKEN_ENDPOINT)
     const response = await fetch(TOKEN_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
+      
       body: params.toString(),
     });
+    console.log("Fetched")
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -119,6 +128,7 @@ export const exchangeCodeForToken = async (code: string): Promise<void> => {
     const data = await response.json();
     console.log("Full token response:", data); // Check if it contains access_token, id_token, etc.
     localStorage.setItem("access_token", data.access_token);
+    localStorage.setItem("refresh_token", data.refresh_token)
     window.location.href = "/"; // Redirect to projects after successful login
   } catch (error) {
     console.error("Token exchange error:", error);
