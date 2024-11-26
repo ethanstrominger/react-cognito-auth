@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { makeGetRequest } from '../services/authService';
-
+import { redirectToLogin } from '../services/authService';
 interface Project {
     id: number;
     name: string;
@@ -13,13 +13,13 @@ const Projects: React.FC = () => {
     useEffect(() => {
         console.log("Use effect")
         const fetchProjects = async () => {
-            try {
-                const response = await makeGetRequest('http://localhost:8000/api/v1/projects/') || {data: ''};
-                console.log("Response", response.data)
-                setProjects(response.data);
-            } catch (error) {
-                console.error('Error fetching projects:', error);
-            }
+        const response = await makeGetRequest('http://localhost:8000/api/v1/projects/');
+        if (!response || !response.data) {
+            redirectToLogin();
+            return;
+        }
+        setProjects(response.data);
+
         };
 
         fetchProjects();

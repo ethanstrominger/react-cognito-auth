@@ -26,6 +26,7 @@ export function isTokenExpired(token: string) {
   return exp || 0 < now;
 }
 
+
 const refreshTokenFunc = async (refreshToken: string) => {
   // todo: fix
   return refreshToken;
@@ -75,10 +76,11 @@ export const makeGetRequest = async (url: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("Debug here")
     return response;
   } catch (error) {
-    console.error('Error fetching projects:', error);
-    // Handle error
+    console.error('DEBUG Error fetching projects:', error);
+    return error;
   }
 };
 
