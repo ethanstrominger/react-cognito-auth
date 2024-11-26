@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { makeGetRequest } from '../services/authService';
 import { redirectToLogin } from '../services/authService';
 interface Project {
-    id: number;
+    uuid: string;
     name: string;
     description: string;
 }
@@ -11,14 +11,16 @@ const Projects: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
 
     useEffect(() => {
-        console.log("Use effect")
         const fetchProjects = async () => {
-        const response = await makeGetRequest('http://localhost:8000/api/v1/projects/');
-        if (!response || !response.data) {
-            redirectToLogin();
-            return;
-        }
-        setProjects(response.data);
+            try {
+                const response = await makeGetRequest('http://localhost:8000/api/v1/projects/');
+                setProjects(response.data);
+            }
+            catch(error) {
+                console.error(error, "Error fetching. Redirecting to login.")
+                redirectToLogin();
+                return;
+            }
 
         };
 
@@ -30,7 +32,7 @@ const Projects: React.FC = () => {
             <h1>Projects</h1>
             <ul>
                 {projects.map((project) => (
-                    <li key={project.id}>
+                    <li key={project.uuid}>
                         {project.name}: {project.description}
                     </li>
                 ))}

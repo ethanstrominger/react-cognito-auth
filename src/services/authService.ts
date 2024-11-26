@@ -60,28 +60,22 @@ const refreshTokenFunc = async (refreshToken: string) => {
 
 export const makeGetRequest = async (url: string) => {
   let token = localStorage.getItem("access_token") || "";
-  console.log("mr", token)
 
   if (isTokenExpired(token)) {
-    console.log("Debug expired", token)
     // Token is expired, try to refresh
     token = await refreshTokenFunc(token);
-    console.log("refreshed token", token);
   }
-  console.log("url", url)
   try {
-    console.log("debug token", token)
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Debug here")
     return response;
   } catch (error) {
-    console.error('DEBUG Error fetching projects:', error);
-    return error;
-  }
+    console.error('Error fetching projects:', error);
+    throw error;
+  };
 };
 
 
@@ -93,10 +87,8 @@ export const exchangeCodeForToken = async (code: string): Promise<void> => {
     redirect_uri: REDIRECT_URI,
     code,
   });
-  console.log("Debug 1", TOKEN_ENDPOINT);
 
   try {
-    console.log("Making request");
     const response = await fetch(TOKEN_ENDPOINT, {
       method: "POST",
       headers: {
@@ -104,7 +96,6 @@ export const exchangeCodeForToken = async (code: string): Promise<void> => {
       },
       body: params.toString(),
     });
-    console.log("response", response);
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -127,13 +118,9 @@ export const exchangeCodeForToken = async (code: string): Promise<void> => {
 
     const data = await response.json();
     console.log("Full token response:", data); // Check if it contains access_token, id_token, etc.
-    console.log("Access Token:", data.access_token);
-    console.log("ID Token:", data.id_token); // Optional: Useful if you need it
     localStorage.setItem("access_token", data.access_token);
-    console.log("local", localStorage.getItem("access_token"))
     window.location.href = "/"; // Redirect to projects after successful login
   } catch (error) {
-    console.log("Error", error);
     console.error("Token exchange error:", error);
     throw error;
   }
