@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './components/Home';
+import Projects from './components/Projects';
+import Callback from './components/Callback';
+import { getAccessToken, redirectToLogin } from './services/authService';
 
-function App() {
+
+const App: React.FC = () => {
+  useEffect(() => {
+    const token = getAccessToken();
+    console.log("Debug token app", token);
+    console.log(window.location);
+    if (window.location.href.includes("callback")) {
+       console.log("Processing callback")
+    } else {
+      if (!token) {
+        redirectToLogin(); // Redirect to Cognito login
+      }
+    };
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/callback" element={<Callback />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
