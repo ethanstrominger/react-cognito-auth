@@ -1,3 +1,6 @@
+// todo: fix
+// todo: get expired towork
+// todo: go to log in screen if not logged in
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 
