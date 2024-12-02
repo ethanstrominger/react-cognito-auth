@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { makeGetRequest, makePatchRequest, redirectToLogin } from '../services/authService';
+import styles from '../styles/Profile.module.css'; // Import CSS module
 
 interface ProfileInterface {
     uuid: string;
@@ -10,6 +11,7 @@ interface ProfileInterface {
 
 const Profile: React.FC = () => {
     const [editProfile, setEditProfile] = useState<ProfileInterface | null>(null);
+    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -38,54 +40,75 @@ const Profile: React.FC = () => {
         try {
             if (editProfile) {
                 const response = await makePatchRequest('api/v1/me/', editProfile);
-                alert("Saved")
                 setEditProfile(response.data); // Update state with the server response
+                showMessage('success', 'Profile updated successfully!');
             }
         } catch (error) {
             console.error('Error updating profile:', error);
-            alert('Failed to update profile. Please try again.');
+            showMessage('error', 'Failed to update profile. Please try again.');
         }
     };
 
+    const showMessage = (type: 'success' | 'error', text: string) => {
+        setMessage({ type, text });
+        setTimeout(() => setMessage(null), 5000); // Clear the message after 5 seconds
+    };
+
     return (
-        <div>
-            <h1>Edit Profile</h1>
+        <div className={styles.container}>
+            <h1 className={styles.title}>Edit Profile</h1>
             {editProfile ? (
-                <form onSubmit={handleFormSubmit}>
-                    <label>
-                        Username:
+                <form className={styles.form} onSubmit={handleFormSubmit}>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="username" className={styles.label}>
+                            Username:
+                        </label>
                         <input
                             type="text"
                             name="username"
+                            id="username"
                             value={editProfile.username || ''}
+                            className={styles.input}
                             onChange={handleInputChange}
                         />
-                    </label>
-                    <br />
-                    <label>
-                        First Name:
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="first_name" className={styles.label}>
+                            First Name:
+                        </label>
                         <input
                             type="text"
                             name="first_name"
+                            id="first_name"
                             value={editProfile.first_name || ''}
+                            className={styles.input}
                             onChange={handleInputChange}
                         />
-                    </label>
-                    <br />
-                    <label>
-                        Last Name:
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="last_name" className={styles.label}>
+                            Last Name:
+                        </label>
                         <input
                             type="text"
                             name="last_name"
+                            id="last_name"
                             value={editProfile.last_name || ''}
+                            className={styles.input}
                             onChange={handleInputChange}
                         />
-                    </label>
-                    <br />
-                    <button type="submit">Save</button>
+                    </div>
+                    <button type="submit" className={styles.button}>
+                        Save
+                    </button>
                 </form>
             ) : (
-                <p>Loading profile...</p>
+                <p className={styles.loading}>Loading profile...</p>
+            )}
+            {message && (
+                <div className={`${styles.message} ${styles[message.type]}`}>
+                    {message.text}
+                </div>
             )}
         </div>
     );

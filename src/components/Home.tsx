@@ -1,28 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from '../styles/Home.module.css'; // Import CSS module
+import styles from '../styles/Home.module.css';
+import { redirectToLogin } from '../services/authService';
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userDetails, setUserDetails] = useState({ firstName: "", lastName: "" });
+
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        setIsLoggedIn(!!token);
+
+        // Simulate fetching user details if logged in
+        if (token) {
+            const user = {
+                firstName: "John", // Replace with actual fetch call
+                lastName: "Doe",   // Replace with actual fetch call
+            };
+            setUserDetails(user);
+        }
+    }, []);
 
     const handleLogout = () => {
-        // Clear the access token from localStorage
-        localStorage.removeItem('access_token');
+        localStorage.removeItem("access_token");
+        setIsLoggedIn(false);
+        setUserDetails({ firstName: "", lastName: "" });
+        navigate("/");
+    };
 
-        // Navigate the user to the login page or home
-        navigate('/');
+    const handleLogin = () => {
+        redirectToLogin();
     };
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>Welcome to the Home Screen</h1>
-            <div className={styles.buttonGroup}>
-                <button className={styles.button} onClick={() => navigate('/profile')}>
+            {/* User Details in Upper Right */}
+            {isLoggedIn && (
+                <div className={styles.userDetails}>
+                    {userDetails.firstName} {userDetails.lastName}
+                </div>
+            )}
+
+            <h1 className={styles.header}>Home Screen</h1>
+
+            {/* Navigation Buttons */}
+            <div className={styles.buttonContainer}>
+                <button onClick={() => navigate('/profile')} className={styles.button}>
                     Go to Profile
                 </button>
-                <button className={`${styles.button} ${styles.logoutButton}`} onClick={handleLogout}>
-                    Logout
-                </button>
+                {isLoggedIn ? (
+                    <button onClick={handleLogout} className={styles.button}>
+                        Logout
+                    </button>
+                ) : (
+                    <button onClick={handleLogin} className={styles.button}>
+                        Log In
+                    </button>
+                )}
             </div>
         </div>
     );
