@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { Link, BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import Home from './components/Home';
 import Profile from './components/Profile';
 import Login from './components/Login';
@@ -7,6 +7,7 @@ import Callback from './components/Callback';
 import { getAccessToken, redirectToLogin } from './services/authService';
 import { UserProvider } from './contexts/UserContext';
 import './styles/App.module.css';
+
 
 const LoginRoute: React.FC = () => {
   const token = getAccessToken();
@@ -25,9 +26,13 @@ const LoginRoute: React.FC = () => {
 
 const App: React.FC = () => {
   useEffect(() => {
+    
     if (window.location.href.includes("callback")) {
       console.log("Processing authentication callback.");
     }
+    console.log("Mounting App");
+    return () => console.log("App unmounted");
+
   }, []);
 
   return (
@@ -37,8 +42,8 @@ const App: React.FC = () => {
           <header className={"header"}>
             <div className={"logo"}>MyApp</div>
             <nav className="nav">
-              <a href="/">Home</a>
-              <a href="/profile">Profile</a>
+              <Link to="/">Home</Link>
+              <Link to="/profile">Profile</Link>
             </nav>
           </header>
           <main className={"mainContent"}>
