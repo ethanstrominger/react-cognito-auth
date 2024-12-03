@@ -1,58 +1,47 @@
-import React, { useState } from "react";
-import axios from "axios";
-import "../styles/Login.css";
-
-const API_SERVER_URL = process.env.REACT_APP_API_SERVER_URL;
+import React, { useState } from 'react';
+import { useUser } from '../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
+import styles from '../styles/Login.module.css';
 
 const Login: React.FC = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const { setUsername, setFirstName, setLastName } = useUser();
+    const [username, setLocalUsername] = useState('');
+    const [firstName, setLocalFirstName] = useState('');
+    const [lastName, setLocalLastName] = useState('');
+    const navigate = useNavigate();
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const url = `${API_SERVER_URL}api/v1/login/`;
-            const response = await axios.post(url, {
-                username,
-                password,
-            });
-            localStorage.setItem("access_token", response.data.token);
-            window.location.href = "/";
-        } catch (err) {
-            setError("Invalid credentials. Please try again.");
-        }
+    const handleSubmit = () => {
+        setUsername(username);
+        setFirstName(firstName);
+        setLastName(lastName);
+        navigate('/');
     };
 
     return (
-        <div className="login-container">
-            <h1 className="login-title">Login</h1>
-            <form className="login-form" onSubmit={handleLogin}>
-                <div className="form-group">
-                    <input
-                        type="text"
-                        className="form-input"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <input
-                        type="password"
-                        className="form-input"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit" className="login-button">
-                    Login
-                </button>
-            </form>
-            {error && <p className="error-message">{error}</p>}
+        <div className={styles.loginContainer}>
+            <h1>Login</h1>
+            <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setLocalUsername(e.target.value)}
+                className={styles.input}
+            />
+            <input
+                type="text"
+                placeholder="First Name"
+                value={firstName}
+                onChange={(e) => setLocalFirstName(e.target.value)}
+                className={styles.input}
+            />
+            <input
+                type="text"
+                placeholder="Last Name"
+                value={lastName}
+                onChange={(e) => setLocalLastName(e.target.value)}
+                className={styles.input}
+            />
+            <button onClick={handleSubmit} className={styles.submitBtn}>Log In</button>
         </div>
     );
 };

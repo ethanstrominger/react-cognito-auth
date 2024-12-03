@@ -1,53 +1,47 @@
-/* App.module.css */
-
 .appContainer {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  font-family: 'Arial', sans-serif;
-  background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #4a90e2;
-  color: white;
+    background-color: #282c34;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.nav {
+    display: flex;
+    gap: 20px;
 }
 
 .nav a {
-  color: white;
-  text-decoration: none;
-  margin-left: 1rem;
-  transition: opacity 0.3s ease;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
 }
 
 .nav a:hover {
-  opacity: 0.8;
+    text-decoration: underline;
 }
 
 .mainContent {
-  flex-grow: 1;
-  padding: 2rem;
-  background-color: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  margin: 2rem auto;
-  width: 90%;
-  max-width: 1200px;
+    flex-grow: 1;
+    padding: 20px;
 }
 
 .footer {
-  text-align: center;
-  padding: 1rem;
-  background-color: #4a90e2;
-  color: white;
-  font-size: 0.9rem;
+    background-color: #282c34;
+    color: white;
+    text-align: center;
+    padding: 10px;
 }
