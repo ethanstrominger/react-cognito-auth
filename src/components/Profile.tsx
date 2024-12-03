@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { makeGetRequest, makePatchRequest, redirectToLogin } from '../services/authService';
+import { useUser } from '../contexts/UserContext'; // Import UserContext
 import styles from '../styles/Profile.module.css'; // Import CSS module
 
 interface ProfileInterface {
@@ -10,6 +11,7 @@ interface ProfileInterface {
 }
 
 const Profile: React.FC = () => {
+    const { setFirstName, setLastName } = useUser(); // Get setters from UserContext
     const [editProfile, setEditProfile] = useState<ProfileInterface | null>(null);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -41,6 +43,11 @@ const Profile: React.FC = () => {
             if (editProfile) {
                 const response = await makePatchRequest('api/v1/me/', editProfile);
                 setEditProfile(response.data); // Update state with the server response
+
+                // Set first and last name in context
+                setFirstName(response.data.first_name);
+                setLastName(response.data.last_name);
+
                 showMessage('success', 'Profile updated successfully!');
             }
         } catch (error) {
