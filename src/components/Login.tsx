@@ -4,16 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Login.module.css';
 
 const Login: React.FC = () => {
-    const { setUsername, setFirstName, setLastName } = useUser();
+    const { setUsername, setfirst_name, setlast_name } = useUser();
     const [username, setLocalUsername] = useState('');
-    const [firstName, setLocalFirstName] = useState('');
-    const [lastName, setLocalLastName] = useState('');
+    const [first_name, setLocalfirst_name] = useState('');
+    const [last_name, setLocallast_name] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = () => {
         setUsername(username);
-        setFirstName(firstName);
-        setLastName(lastName);
+        setfirst_name(first_name);
+        setlast_name(last_name);
         navigate('/');
     };
 
@@ -30,15 +30,15 @@ const Login: React.FC = () => {
             <input
                 type="text"
                 placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setLocalFirstName(e.target.value)}
+                value={first_name}
+                onChange={(e) => setLocalfirst_name(e.target.value)}
                 className={styles.input}
             />
             <input
                 type="text"
                 placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLocalLastName(e.target.value)}
+                value={last_name}
+                onChange={(e) => setLocallast_name(e.target.value)}
                 className={styles.input}
             />
             <button onClick={handleSubmit} className={styles.submitBtn}>Log In</button>

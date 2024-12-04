@@ -112,12 +112,14 @@ export const makePatchRequest = async (url: string, data: any) => {
     },
     body: JSON.stringify(data),
   });
+  const j = await response.json();
+  console.log("response data im makePatchRequest", j)
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return await response.json();
+  return j;
 };
 
 

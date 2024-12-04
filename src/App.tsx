@@ -6,7 +6,8 @@ import Login from './components/Login';
 import Callback from './components/Callback';
 import { getAccessToken, redirectToLogin } from './services/authService';
 import { UserProvider } from './contexts/UserContext';
-import './styles/App.module.css';
+import styles from './styles/App.module.css';
+import { useUser } from './contexts/UserContext'
 
 
 const LoginRoute: React.FC = () => {
@@ -24,7 +25,8 @@ const LoginRoute: React.FC = () => {
   return <Outlet />;
 };
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { first_name, last_name, username } = useUser();
   useEffect(() => {
     
     if (window.location.href.includes("callback")) {
@@ -34,17 +36,25 @@ const App: React.FC = () => {
     return () => console.log("App unmounted");
 
   }, []);
+  const token = getAccessToken()
+  const isLoggedIn = ( token && username )
+  console.log("debug x", isLoggedIn, token, username, first_name, last_name  );
 
   return (
     <UserProvider>
       <Router>
-        <div className={"appContainer"}>
-          <header className={"header"}>
-            <div className={"logo"}>MyApp</div>
-            <nav className="nav">
+        <div className={styles.appContainer}>
+          <header className={styles.header}>
+            <nav className={styles.nav}>
               <Link to="/">Home</Link>
               <Link to="/profile">Profile</Link>
             </nav>
+            <div className={styles.logo}>React Cognito Example</div>
+            {isLoggedIn && (
+              <div className={styles.userDetails}>
+                {first_name} {last_name || username }
+              </div>
+            )}
           </header>
           <main className={"mainContent"}>
             <Routes>
@@ -61,6 +71,13 @@ const App: React.FC = () => {
           </footer>
         </div>
       </Router>
+    </UserProvider>
+  );
+};
+const App: React.FC = () => {
+  return (
+    <UserProvider>
+      <AppContent />
     </UserProvider>
   );
 };
