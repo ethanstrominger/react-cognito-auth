@@ -6,7 +6,7 @@ import { makeGetRequest, redirectToLogin } from '../services/authService';
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
-    const { username, firstName, lastName, setUsername, setFirstName, setLastName } = useUser();
+    const { username, first_name, last_name, setUsername, setfirst_name, setlast_name } = useUser();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
@@ -19,11 +19,11 @@ const Home: React.FC = () => {
                 try {
                     const response = await makeGetRequest('api/v1/me/');
                     setUsername(response.data.username);
-                    setFirstName(response.data.first_name);
-                    setLastName(response.data.last_name)
+                    setfirst_name(response.data.first_name);
+                    setlast_name(response.data.last_name)
                 } catch (error) {
-                    setFirstName(""); // Replace with actual fetch call
-                    setLastName("");   // Replace with actual fetch call
+                    setfirst_name(""); // Replace with actual fetch call
+                    setlast_name("");   // Replace with actual fetch call
                     setUsername(""); // Replace with actual fetch call
                 }
             };
@@ -31,13 +31,13 @@ const Home: React.FC = () => {
 
 
         }
-    }, [username, setFirstName, setLastName, setUsername]);
+    }, [username, setfirst_name, setlast_name, setUsername]);
 
     const handleLogout = () => {
         localStorage.removeItem("access_token");
         setIsLoggedIn(false);
-        setFirstName("");
-        setLastName("");
+        setfirst_name("");
+        setlast_name("");
         setUsername("");
         navigate("/");
     };
@@ -51,7 +51,7 @@ const Home: React.FC = () => {
             {/* User Details in Upper Right */}
             {isLoggedIn && (
                 <div className={styles.userDetails}>
-                    {firstName} {lastName}
+                    {first_name} {last_name}
                 </div>
             )}
 

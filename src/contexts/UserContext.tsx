@@ -2,11 +2,11 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 
 interface UserContextType {
     username: string;
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     setUsername: (username: string) => void;
-    setFirstName: (firstName: string) => void;
-    setLastName: (lastName: string) => void;
+    setfirst_name: (first_name: string) => void;
+    setlast_name: (last_name: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -21,8 +21,8 @@ export const useUser = (): UserContextType => {
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [username, setUsername] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
+    const [first_name, setfirst_name] = useState('');
+    const [last_name, setlast_name] = useState('');
     useEffect(() => {
         console.log("UserProvider mounted");
         return () => console.log("UserProvider unmounted");
@@ -30,7 +30,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 
     return (
-        <UserContext.Provider value={{ username, firstName, lastName, setUsername, setFirstName, setLastName }}>
+        <UserContext.Provider value={{ username, first_name, last_name, setUsername, setfirst_name, setlast_name }}>
             {children}
         </UserContext.Provider>
     );

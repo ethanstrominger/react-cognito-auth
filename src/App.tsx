@@ -44,13 +44,13 @@ const App: React.FC = () => {
 };
 
 const App2: React.FC = () => {
-  const { username, firstName, lastName } = useUser()
+  const { username, first_name, last_name } = useUser()
   return (
 
     <Router>
       <div className={"appContainer"}>        
         <header className={"header"}>
-          <div className={"logo"}>MyApp {username} {firstName} {lastName}</div>
+          <div className={"logo"}>MyApp {username} {first_name} {last_name}</div>
           <nav className="nav">
             <Link to="/">Home</Link>
             <Link to="/profile">Profile</Link>
