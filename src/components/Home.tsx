@@ -6,14 +6,14 @@ import { redirectToLogin } from '../services/authService';
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
-    const { username, setUsername, setfirst_name, setlast_name } = useUser();
+    const user = useUser();
     const token = localStorage.getItem("access_token");
-    const isLoggedIn = !!token && !!username;
+    const isLoggedIn = token && user.username;
     const handleLogout = () => {
         localStorage.removeItem("access_token");
-        setfirst_name("");
-        setlast_name("");
-        setUsername("");
+        user.setfirst_name("");
+        user.setlast_name("");
+        user.setUsername("");
     };
 
     const handleLogin = () => {

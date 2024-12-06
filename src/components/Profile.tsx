@@ -11,7 +11,7 @@ interface ProfileInterface {
 }
 
 const Profile: React.FC = () => {
-    const { setUsername, setfirst_name, setlast_name } = useUser(); // Get setters from UserContext
+    const user = useUser();
     const [editProfile, setEditProfile] = useState<ProfileInterface | null>(null);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -45,9 +45,9 @@ const Profile: React.FC = () => {
                 setEditProfile(response.data); // Update state with the server response
 
                 // Set first and last name in context
-                setUsername(response.data.username)
-                setfirst_name(response.data.first_name);
-                setlast_name(response.data.last_name);
+                user.setUsername(response.data.username)
+                user.setfirst_name(response.data.first_name);
+                user.setlast_name(response.data.last_name);
 
                 showMessage('success', 'Profile updated successfully!');
             }
