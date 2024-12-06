@@ -1,47 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import styles from '../styles/Home.module.css';
-import { makeGetRequest, redirectToLogin } from '../services/authService';
+import { redirectToLogin } from '../services/authService';
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
-    const { username, setUsername, first_name, last_name, setfirst_name, setlast_name } = useUser();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const token = localStorage.getItem("access_token");
-        setIsLoggedIn(!!token);
-
-        // Simulate fetching user details if logged in
-        if (token && !username) {
-            const fetchProfile = async () => {
-                try {
-                    console.log("setting first_name, last_name")
-                    const response = await makeGetRequest('api/v1/me/');
-                    setUsername(response.data.username);
-                    setfirst_name(response.data.first_name);
-                    console.log(username, first_name, last_name )
-                    setlast_name(response.data.last_name)
-                } catch (error) {
-                    setfirst_name(""); // Replace with actual fetch call
-                    setlast_name("");   // Replace with actual fetch call
-                    setUsername(""); // Replace with actual fetch call
-                }
-            };
-            fetchProfile();
-
-
-        }
-    }, [username, first_name, last_name, setfirst_name, setlast_name, setUsername]);
-
+    const user = useUser();
+    const token = localStorage.getItem("access_token");
+    const isLoggedIn = token && user.username;
     const handleLogout = () => {
         localStorage.removeItem("access_token");
-        setIsLoggedIn(false);
-        setfirst_name("");
-        setlast_name("");
-        setUsername("");
-        navigate("/");
+        user.setfirst_name("");
+        user.setlast_name("");
+        user.setUsername("");
     };
 
     const handleLogin = () => {

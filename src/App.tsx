@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
-import { Link, BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import Home from './components/Home';
 import Profile from './components/Profile';
 import Login from './components/Login';
 import Callback from './components/Callback';
-import { getAccessToken, redirectToLogin } from './services/authService';
-import { UserProvider } from './contexts/UserContext';
+import { getAccessToken, makeGetRequest, redirectToLogin } from './services/authService';
+import { UserProvider, useUser } from './contexts/UserContext';
 import styles from './styles/App.module.css';
-import { useUser } from './contexts/UserContext'
+import AppHeader from './AppHeader';
 
 
 const LoginRoute: React.FC = () => {
@@ -25,61 +25,68 @@ const LoginRoute: React.FC = () => {
   return <Outlet />;
 };
 
-const AppContent: React.FC = () => {
-  const { first_name, last_name, username } = useUser();
+const App: React.FC = () => {
   useEffect(() => {
     
     if (window.location.href.includes("callback")) {
       console.log("Processing authentication callback.");
     }
-    console.log("Mounting App");
-    return () => console.log("App unmounted");
 
   }, []);
-  const token = getAccessToken()
-  const isLoggedIn = ( token && username )
-  console.log("debug x", isLoggedIn, token, username, first_name, last_name  );
+
 
   return (
     <UserProvider>
-      <Router>
-        <div className={styles.appContainer}>
-          <header className={styles.header}>
-            <nav className={styles.nav}>
-              <Link to="/">Home</Link>
-              <Link to="/profile">Profile</Link>
-            </nav>
-            <div className={styles.logo}>React Cognito Example</div>
-            {isLoggedIn && (
-              <div className={styles.userDetails}>
-                {first_name} {last_name || username }
-              </div>
-            )}
-          </header>
-          <main className={"mainContent"}>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/callback" element={<Callback />} />
-              <Route element={<LoginRoute />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/profile" element={<Profile />} />
-              </Route>
-            </Routes>
-          </main>
-          <footer className={"footer"}>
-            © {new Date().getFullYear()} MyApp. All rights reserved.
-          </footer>
-        </div>
-      </Router>
-    </UserProvider>
+      <App2 />
+   </UserProvider>
   );
 };
-const App: React.FC = () => {
+
+const App2: React.FC = () => {
+  const user = useUser()
+  const user_str = JSON.stringify(user); // 
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+
+    // Simulate fetching user details if logged in
+    if (token && !user.username) {
+      const fetchProfile = async () => {
+        try {
+          const response = await makeGetRequest('api/v1/me/');
+          user.setUsername(response.data.username);
+          user.setfirst_name(response.data.first_name);
+          user.setlast_name(response.data.last_name)
+        } catch (error) {
+          user.setfirst_name(""); // Replace with actual fetch call
+          user.setlast_name("");   // Replace with actual fetch call
+          user.setUsername(""); // Replace with actual fetch call
+        }
+      };
+      fetchProfile();
+
+
+    }
+  }, [user, user_str]);
   return (
-    <UserProvider>
-      <AppContent />
-    </UserProvider>
-  );
-};
+
+    <Router>
+      <div className={styles.appContainer}>        
+        <AppHeader />
+        <main className={styles.mainContent}>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/callback" element={<Callback />} />
+            <Route element={<LoginRoute />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+          </Routes>
+        </main>
+        <footer className={styles.footer}>
+          © {new Date().getFullYear()} MyApp. All rights reserved.
+        </footer>
+      </div>
+    </Router>
+)};
 
 export default App;

@@ -16,7 +16,6 @@ const COGNITO_DOMAIN = `peopledepot.auth.${COGNITO_AWS_REGION}.amazoncognito.com
 // Compute dependent URLs
 const TOKEN_ENDPOINT = `https://${COGNITO_DOMAIN}/oauth2/token`;
 
-console.log("COGNITO_CLIENT_ID", COGNITO_CLIENT_ID)
 const LOGIN_URL = COGNITO_CLIENT_ID ? 
   `https://${COGNITO_DOMAIN}/login?response_type=code&client_id=${COGNITO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=openid` :
   "login/"
@@ -112,14 +111,12 @@ export const makePatchRequest = async (url: string, data: any) => {
     },
     body: JSON.stringify(data),
   });
-  const j = await response.json();
-  console.log("response data im makePatchRequest", j)
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return j;
+  return await response.json();
 };
 
 

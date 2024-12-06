@@ -1,58 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { makePatchRequest } from '../services/authService';
-import { useUser, UserContextType } from '../contexts/UserContext'; // Import UserContext
+import { makeGetRequest, makePatchRequest, redirectToLogin } from '../services/authService';
+import { useUser } from '../contexts/UserContext'; // Import UserContext
 import styles from '../styles/Profile.module.css'; // Import CSS module
 
+interface ProfileInterface {
+    uuid: string;
+    username: string;
+    first_name: string;
+    last_name: string;
+}
+
 const Profile: React.FC = () => {
-    const user = useUser(); // Get the entire user object from context
-    console.log("User", user)
-
-    // Initialize editProfile with the values from `useUser`
-    const [editProfile, setEditProfile] = useState<UserContextType>({
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        setUsername: user.setUsername,
-        setfirst_name: user.setfirst_name,
-        setlast_name: user.setlast_name,
-    });
-
-    useEffect(() => {
-        if (user) {
-            setEditProfile({
-                username: user.username,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                setUsername: user.setUsername,
-                setfirst_name: user.setfirst_name,
-                setlast_name: user.setlast_name,
-            });
-        }
-    }, [user]);
-
+    const user = useUser();
+    const [editProfile, setEditProfile] = useState<ProfileInterface | null>(null);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await makeGetRequest('api/v1/me/');
+                setEditProfile(response.data);
+            } catch (error) {
+                redirectToLogin();
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        setEditProfile((prevProfile) =>
-            prevProfile ? { ...prevProfile, [name]: value } : prevProfile
-        );
+        if (editProfile) {
+            const { name, value } = event.target;
+            setEditProfile((prevProfile) =>
+                prevProfile ? { ...prevProfile, [name]: value } : null
+            );
+        }
     };
 
     const handleFormSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await makePatchRequest('api/v1/me/', editProfile);
-            console.log("Updating value", response.data)
-            setEditProfile(response.data); // Update the state with the server response
+            if (editProfile) {
+                const response = await makePatchRequest('api/v1/me/', editProfile);
+                setEditProfile(response.data); // Update state with the server response
 
-            // Update the context with the new values
-            console.log("Changes", user.username, user.first_name, user.last_name)
-            user.setUsername(response.data.username);
-            user.setfirst_name(response.data.first_name);
-            user.setlast_name(response.data.last_name);
+                // Set first and last name in context
+                user.setUsername(response.data.username)
+                user.setfirst_name(response.data.first_name);
+                user.setlast_name(response.data.last_name);
 
-            showMessage('success', 'Profile updated successfully!');
+                showMessage('success', 'Profile updated successfully!');
+            }
         } catch (error) {
             console.error('Error updating profile:', error);
             showMessage('error', 'Failed to update profile. Please try again.');
@@ -64,33 +62,14 @@ const Profile: React.FC = () => {
         setTimeout(() => setMessage(null), 5000); // Clear the message after 5 seconds
     };
 
-    function getCurrentTime() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-
-        return `${hours}:${minutes}:${seconds}`;
-    }
-
     return (
         <div className={styles.container}>
-            <p>Username { "** e **" + editProfile?.first_name + "** u ** " + useUser().first_name + " ** "+ getCurrentTime() } </p>
             <h1 className={styles.title}>Edit Profile</h1>
             {editProfile ? (
                 <form className={styles.form} onSubmit={handleFormSubmit}>
                     <div className={styles.formGroup}>
-                        <label htmlFor="username" className={styles.label}>
-                            Username:
-                        </label>
-                        <input
-                            type="text"
-                            name="username"
-                            id="username"
-                            value={editProfile.username || ''}
-                            className={styles.input}
-                            onChange={handleInputChange}
-                        />
+                            Username: {editProfile.username}
+                        
                     </div>
                     <div className={styles.formGroup}>
                         <label htmlFor="first_name" className={styles.label}>
