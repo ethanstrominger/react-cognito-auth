@@ -50,11 +50,15 @@ const App2: React.FC = () => {
     <Router>
       <div className={styles.appContainer}>        
         <header className={styles.header}>
-          <div className={styles.logo}>MyApp {username} {first_name} {last_name}</div>
           <nav className={styles.nav}>
             <Link to="/">Home</Link>
             <Link to="/profile">Profile</Link>
           </nav>
+            <div className={styles.logo}>React Cognito Example</div>
+          <div className={styles.userDetails}>
+            {first_name} {last_name || username}
+          </div>
+
         </header>
         <main className={styles.mainContent}>
           <Routes>
