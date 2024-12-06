@@ -7,6 +7,7 @@ import Callback from './components/Callback';
 import { getAccessToken, makeGetRequest, redirectToLogin } from './services/authService';
 import { UserProvider, useUser } from './contexts/UserContext';
 import styles from './styles/App.module.css';
+import AppHeader from './AppHeader';
 
 
 const LoginRoute: React.FC = () => {
@@ -73,17 +74,7 @@ const App2: React.FC = () => {
 
     <Router>
       <div className={styles.appContainer}>        
-        <header className={styles.header}>
-          <nav className={styles.nav}>
-            <Link to="/">Home</Link>
-            <Link to="/profile">Profile</Link>
-          </nav>
-            <div className={styles.logo}>React Cognito Example</div>
-          <div className={styles.userDetails}>
-            {first_name} {last_name || username}
-          </div>
-
-        </header>
+        <AppHeader />
         <main className={styles.mainContent}>
           <Routes>
             <Route path="/login" element={<Login />} />
