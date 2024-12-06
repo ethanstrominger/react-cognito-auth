@@ -6,7 +6,7 @@ import Login from './components/Login';
 import Callback from './components/Callback';
 import { getAccessToken, redirectToLogin } from './services/authService';
 import { UserProvider, useUser } from './contexts/UserContext';
-import './styles/App.module.css';
+import styles from './styles/App.module.css';
 
 
 const LoginRoute: React.FC = () => {
@@ -48,15 +48,15 @@ const App2: React.FC = () => {
   return (
 
     <Router>
-      <div className={"appContainer"}>        
-        <header className={"header"}>
-          <div className={"logo"}>MyApp {username} {first_name} {last_name}</div>
-          <nav className="nav">
+      <div className={styles.appContainer}>        
+        <header className={styles.header}>
+          <div className={styles.logo}>MyApp {username} {first_name} {last_name}</div>
+          <nav className={styles.nav}>
             <Link to="/">Home</Link>
             <Link to="/profile">Profile</Link>
           </nav>
         </header>
-        <main className={"mainContent"}>
+        <main className={styles.mainContent}>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/callback" element={<Callback />} />
@@ -66,7 +66,7 @@ const App2: React.FC = () => {
             </Route>
           </Routes>
         </main>
-        <footer className={"footer"}>
+        <footer className={styles.footer}>
           © {new Date().getFullYear()} MyApp. All rights reserved.
         </footer>
       </div>
