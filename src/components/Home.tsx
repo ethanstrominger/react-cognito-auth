@@ -6,7 +6,7 @@ import { makeGetRequest, redirectToLogin } from '../services/authService';
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
-    const { username, first_name, last_name, setUsername, setfirst_name, setlast_name } = useUser();
+    const { username, setUsername, first_name, last_name, setfirst_name, setlast_name } = useUser();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
@@ -17,9 +17,11 @@ const Home: React.FC = () => {
         if (token && !username) {
             const fetchProfile = async () => {
                 try {
+                    console.log("setting first_name, last_name")
                     const response = await makeGetRequest('api/v1/me/');
                     setUsername(response.data.username);
                     setfirst_name(response.data.first_name);
+                    console.log(username, first_name, last_name )
                     setlast_name(response.data.last_name)
                 } catch (error) {
                     setfirst_name(""); // Replace with actual fetch call
@@ -31,7 +33,7 @@ const Home: React.FC = () => {
 
 
         }
-    }, [username, setfirst_name, setlast_name, setUsername]);
+    }, [username, first_name, last_name, setfirst_name, setlast_name, setUsername]);
 
     const handleLogout = () => {
         localStorage.removeItem("access_token");
@@ -49,11 +51,6 @@ const Home: React.FC = () => {
     return (
         <div className={styles.container}>
             {/* User Details in Upper Right */}
-            {isLoggedIn && (
-                <div className={styles.userDetails}>
-                    {first_name} {last_name}
-                </div>
-            )}
 
             <h1 className={styles.header}>Home Screen</h1>
 
