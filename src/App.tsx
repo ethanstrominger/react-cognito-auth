@@ -4,7 +4,7 @@ import Home from './components/Home';
 import Profile from './components/Profile';
 import Login from './components/Login';
 import Callback from './components/Callback';
-import { getAccessToken, redirectToLogin } from './services/authService';
+import { getAccessToken, makeGetRequest, redirectToLogin } from './services/authService';
 import { UserProvider, useUser } from './contexts/UserContext';
 import styles from './styles/App.module.css';
 
@@ -44,7 +44,31 @@ const App: React.FC = () => {
 };
 
 const App2: React.FC = () => {
-  const { username, first_name, last_name } = useUser()
+  const { username, first_name, last_name, setUsername, setfirst_name, setlast_name } = useUser()
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+
+    // Simulate fetching user details if logged in
+    if (token && !username) {
+      const fetchProfile = async () => {
+        try {
+          console.log("setting first_name, last_name")
+          const response = await makeGetRequest('api/v1/me/');
+          setUsername(response.data.username);
+          setfirst_name(response.data.first_name);
+          console.log(username, first_name, last_name)
+          setlast_name(response.data.last_name)
+        } catch (error) {
+          setfirst_name(""); // Replace with actual fetch call
+          setlast_name("");   // Replace with actual fetch call
+          setUsername(""); // Replace with actual fetch call
+        }
+      };
+      fetchProfile();
+
+
+    }
+  }, [username, first_name, last_name, setfirst_name, setlast_name, setUsername]);
   return (
 
     <Router>
