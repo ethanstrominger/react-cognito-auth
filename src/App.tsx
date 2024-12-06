@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import Home from './components/Home';
 import Profile from './components/Profile';
 import Login from './components/Login';
@@ -31,8 +31,6 @@ const App: React.FC = () => {
     if (window.location.href.includes("callback")) {
       console.log("Processing authentication callback.");
     }
-    console.log("Mounting App");
-    return () => console.log("App unmounted");
 
   }, []);
 
@@ -45,31 +43,30 @@ const App: React.FC = () => {
 };
 
 const App2: React.FC = () => {
-  const { username, first_name, last_name, setUsername, setfirst_name, setlast_name } = useUser()
+  const user = useUser()
+  const user_str = JSON.stringify(user); // 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
 
     // Simulate fetching user details if logged in
-    if (token && !username) {
+    if (token && !user.username) {
       const fetchProfile = async () => {
         try {
-          console.log("setting first_name, last_name")
           const response = await makeGetRequest('api/v1/me/');
-          setUsername(response.data.username);
-          setfirst_name(response.data.first_name);
-          console.log(username, first_name, last_name)
-          setlast_name(response.data.last_name)
+          user.setUsername(response.data.username);
+          user.setfirst_name(response.data.first_name);
+          user.setlast_name(response.data.last_name)
         } catch (error) {
-          setfirst_name(""); // Replace with actual fetch call
-          setlast_name("");   // Replace with actual fetch call
-          setUsername(""); // Replace with actual fetch call
+          user.setfirst_name(""); // Replace with actual fetch call
+          user.setlast_name("");   // Replace with actual fetch call
+          user.setUsername(""); // Replace with actual fetch call
         }
       };
       fetchProfile();
 
 
     }
-  }, [username, first_name, last_name, setfirst_name, setlast_name, setUsername]);
+  }, [user, user_str]);
   return (
 
     <Router>

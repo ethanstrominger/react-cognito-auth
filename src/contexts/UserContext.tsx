@@ -23,11 +23,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [username, setUsername] = useState('');
     const [first_name, setfirst_name] = useState('');
     const [last_name, setlast_name] = useState('');
-    useEffect(() => {
-        console.log("UserProvider mounted");
-        return () => console.log("UserProvider unmounted");
-    }, []);
-
+    
 
     return (
         <UserContext.Provider value={{ username, first_name, last_name, setUsername, setfirst_name, setlast_name }}>

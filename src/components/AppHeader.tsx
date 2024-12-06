@@ -14,11 +14,9 @@ const AppHeader: React.FC = () => {
         if (token && !username) {
             const fetchProfile = async () => {
                 try {
-                    console.log("setting first_name, last_name")
                     const response = await makeGetRequest('api/v1/me/');
                     setUsername(response.data.username);
                     setfirst_name(response.data.first_name);
-                    console.log(username, first_name, last_name)
                     setlast_name(response.data.last_name)
                 } catch (error) {
                     setfirst_name(""); // Replace with actual fetch call
