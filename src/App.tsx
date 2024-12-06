@@ -5,7 +5,7 @@ import Profile from './components/Profile';
 import Login from './components/Login';
 import Callback from './components/Callback';
 import { getAccessToken, redirectToLogin } from './services/authService';
-import { UserProvider } from './contexts/UserContext';
+import { UserProvider, useUser } from './contexts/UserContext';
 import './styles/App.module.css';
 
 
@@ -35,34 +35,42 @@ const App: React.FC = () => {
 
   }, []);
 
+
   return (
     <UserProvider>
-      <Router>
-        <div className={"appContainer"}>
-          <header className={"header"}>
-            <div className={"logo"}>MyApp</div>
-            <nav className="nav">
-              <Link to="/">Home</Link>
-              <Link to="/profile">Profile</Link>
-            </nav>
-          </header>
-          <main className={"mainContent"}>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/callback" element={<Callback />} />
-              <Route element={<LoginRoute />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/profile" element={<Profile />} />
-              </Route>
-            </Routes>
-          </main>
-          <footer className={"footer"}>
-            © {new Date().getFullYear()} MyApp. All rights reserved.
-          </footer>
-        </div>
-      </Router>
-    </UserProvider>
+      <App2 />
+   </UserProvider>
   );
 };
+
+const App2: React.FC = () => {
+  const { username, firstName, lastName } = useUser()
+  return (
+
+    <Router>
+      <div className={"appContainer"}>        
+        <header className={"header"}>
+          <div className={"logo"}>MyApp {username} {firstName} {lastName}</div>
+          <nav className="nav">
+            <Link to="/">Home</Link>
+            <Link to="/profile">Profile</Link>
+          </nav>
+        </header>
+        <main className={"mainContent"}>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/callback" element={<Callback />} />
+            <Route element={<LoginRoute />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+          </Routes>
+        </main>
+        <footer className={"footer"}>
+          © {new Date().getFullYear()} MyApp. All rights reserved.
+        </footer>
+      </div>
+    </Router>
+)};
 
 export default App;
