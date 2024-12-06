@@ -2,22 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import styles from '../styles/Home.module.css';
-import { makeGetRequest, redirectToLogin } from '../services/authService';
+import { redirectToLogin } from '../services/authService';
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
-    const { setUsername, setfirst_name, setlast_name } = useUser();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-
-
+    const { username, setUsername, setfirst_name, setlast_name } = useUser();
+    const token = localStorage.getItem("access_token");
+    const isLoggedIn = !!token && !!username;
     const handleLogout = () => {
         localStorage.removeItem("access_token");
-        setIsLoggedIn(false);
         setfirst_name("");
         setlast_name("");
         setUsername("");
-        navigate("/");
     };
 
     const handleLogin = () => {
